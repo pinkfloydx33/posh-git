@@ -28,12 +28,14 @@ $shortGitParams = @{
     rebase = 'm s X S q v n C f i p x'
     remote = 'v'
     reset = 'q p'
+    restore = 's S W q m 2 3 p'
     revert = 'e m n S s X'
     rm = 'f n r q'
     shortlog = 'n s e w'
     stash = 'p k u a q'
     status = 's b u z'
     submodule = 'q b f n N'
+    'switch' = 'c C q m d t f'
     tag = 'a s u f d v n l m F'
     whatchanged = 'p'
 }
@@ -70,6 +72,7 @@ $longGitParams = @{
     reflog = 'stale-fix expire= expire-unreachable= all updateref rewrite verbose'
     remote = 'verbose'
     reset = 'patch quiet soft mixed hard merge keep'
+    restore = 'source staged worktree quiet merge ignore-merged overlay recurse-submodules= progress conflict= patch ours theirs ignore-skip-worktree-bits'
     revert = 'edit mainline no-edit no-commit gpg-sign signoff strategy= strategy-option continue quit abort'
     rm = 'force dry-run cached ignore-unmatch quiet'
     shortlog = 'numbered summary email format='
@@ -77,6 +80,7 @@ $longGitParams = @{
     stash = 'patch no-keep-index keep-index include-untracked all quiet index'
     status = 'short branch porcelain long untracked-files ignore-submodules ignored column no-column'
     submodule = 'quiet branch force cached files summary-limit remote no-fetch checkout merge rebase init name reference recursive depth'
+    'switch' = 'create force-create guess discard-changes quiet recurse-submodules= progress merge conflict= detach track force orphan overwrite-ignore ignore-other-worktress'
     tag = 'annotate sign local-user force delete verify list sort column no-column contains points-at message file cleanup'
     whatchanged = 'since'
 }
@@ -116,6 +120,14 @@ $gitParamValues = @{
     }
     checkout = @{
         conflict = 'merge diff3'
+    }
+    restore = @{
+        conflict = 'merge diff3'
+        'recurse-submodules' = 'yes on-demand no'
+    }
+    'switch' = @{
+        conflict = 'merge diff3'
+        'recurse-submodules' = 'yes on-demand no'
     }
     'cherry-pick' = @{
         strategy = 'resolve recursive octopus ours subtree'

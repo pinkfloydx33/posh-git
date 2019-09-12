@@ -54,8 +54,8 @@ function script:gitCmdOperations($commands, $command, $filter) {
 $script:someCommands = @('add','am','annotate','archive','bisect','blame','branch','bundle','checkout','cherry',
                          'cherry-pick','citool','clean','clone','commit','config','describe','diff','difftool','fetch',
                          'format-patch','gc','grep','gui','help','init','instaweb','log','merge','mergetool','mv',
-                         'notes','prune','pull','push','rebase','reflog','remote','rerere','reset','revert','rm',
-                         'shortlog','show','stash','status','submodule','svn','tag','whatchanged', 'worktree')
+                         'notes','prune','pull','push','rebase','reflog','remote','rerere','reset','restore','revert','rm',
+                         'shortlog','show','stash','status','submodule','svn','switch','tag','whatchanged', 'worktree')
 
 if ((($PSVersionTable.PSVersion.Major -eq 5) -or $IsWindows) -and ($script:GitVersion -ge [System.Version]'2.16.2')) {
     $script:someCommands += 'update-git-for-windows'
@@ -188,6 +188,14 @@ function script:gitAddFiles($GitStatus, $filter) {
 
 function script:gitCheckoutFiles($GitStatus, $filter) {
     gitFiles $filter (@($GitStatus.Working.Unmerged) + @($GitStatus.Working.Modified) + @($GitStatus.Working.Deleted))
+}
+
+function script:gitRestoreFiles($GitStatus, $filter, $staged) {
+    if ($staged) {
+        gitFiles $filter $GitStatus.Index.Modified
+    } else {
+        gitFiles $filter (@($GitStatus.Working.Unmerged) + @($GitStatus.Working.Modified) + @($GitStatus.Working.Deleted))
+    }
 }
 
 function script:gitDiffFiles($GitStatus, $filter, $staged) {
@@ -377,6 +385,17 @@ function GitTabExpansionInternal($lastBlock, $GitStatus = $null) {
         # Handles git checkout -- <path>
         "^checkout.* -- (?<files>\S*)$" {
             gitCheckoutFiles $GitStatus $matches['files']
+        }
+
+        # Handles git restore <path>
+        "^restore(?:.* (?<staged>(?:--staged))|.*) (?<files>\S*)$" {
+            gitRestoreFiles $GitStatus $matches['files'] $matches['staged']
+        }
+
+        # Handles git restore --source <ref>
+        "^restore.*?(?:-s|--source).* (?<ref>\S*)$" {
+            gitBranches $matches['ref'] $true
+            gitTags $matches['ref']
         }
 
         # Handles git rm <path>
